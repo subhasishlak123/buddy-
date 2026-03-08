@@ -8,35 +8,35 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
-    # This tells EVERY step below to look inside your folder
-    defaults:
-      run:
-        working-directory: ./buddy-
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-        with:
-          # This ensures the checkout happens correctly for the subfolder
-          sparse-checkout: .
+
+      - name: Debug - List All Files
+        # This will show us EXACTLY where your files are in the logs
+        run: find . -maxdepth 3 -not -path '*/.*'
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: 'gradle'
-
+          # We remove the 'cache: gradle' line for now to stop the error
+          
       - name: Grant Execute Permission
-        run: chmod +x gradlew
+        # This will find gradlew even if it's in a subfolder
+        run: find . -name "gradlew" -exec chmod +x {} +
 
       - name: Build Debug APK
-        run: ./gradlew assembleDebug
+        # This command finds the subfolder automatically and builds it
+        run: |
+          SUBFOLDER=$(find . -name "settings.gradle.kts" -printf '%h\n' | head -n 1)
+          cd "$SUBFOLDER"
+          ./gradlew assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: DeskBuddy-App
-          # Path must point to the APK inside the subfolder
-          path: buddy-/app/build/outputs/apk/debug/*.apk
+          path: "**/build/outputs/apk/debug/*.apk"
