@@ -16,14 +16,15 @@ android {
         versionName = "1.0"
     }
 
-    // MANDATORY for JVM consistency
+    // This ensures both Java and Kotlin use Version 17
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = "17"
+    // Updated syntax for Kotlin 2.0 inside the android block
+    kotlin {
+        jvmToolchain(17)
     }
 
     buildFeatures {
