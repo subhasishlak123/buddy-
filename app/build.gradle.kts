@@ -1,13 +1,12 @@
-// APP build.gradle.kts
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.plugin.compose") // Add this line
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 android {
     namespace = "com.buddy"
-    compileSdk = 35 // Use latest SDK
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.buddy"
@@ -17,10 +16,19 @@ android {
         versionName = "1.0"
     }
 
-    buildFeatures {
-        compose = true // Enable Compose
+    // MANDATORY for JVM consistency
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
-    // We no longer need the composeOptions block with Kotlin 2.0+
+
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+
+    buildFeatures {
+        compose = true
+    }
 }
 
 dependencies {
