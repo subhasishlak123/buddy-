@@ -40,3 +40,10 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.9.2")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.6")
 }
+// Add this to the very end of app/build.gradle.kts
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    compilerOptions {
+        // This stops the compiler from spawning too many memory-hungry threads
+        freeCompilerArgs.add("-Xbackend-threads=1")
+    }
+}
