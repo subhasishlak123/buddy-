@@ -1,39 +1,33 @@
+// APP build.gradle.kts
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.compose") // Add this line
 }
 
 android {
     namespace = "com.buddy"
-    compileSdk = 35
+    compileSdk = 35 // Use latest SDK
 
     defaultConfig {
         applicationId = "com.buddy"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
     }
 
     buildFeatures {
-        compose = true
+        compose = true // Enable Compose
     }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.14" 
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
+    // We no longer need the composeOptions block with Kotlin 2.0+
 }
 
 dependencies {
-    // Basic UI and Android tools only
-    implementation("androidx.core:core-ktx:1.15.0")
-    implementation("androidx.activity:activity-compose:1.10.0")
-    implementation(platform("androidx.compose:compose-bom:2025.02.00"))
+    val composeBom = platform("androidx.compose:compose-bom:2024.09.03")
+    implementation(composeBom)
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.material3:material3")
+    implementation("androidx.activity:activity-compose:1.9.2")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.6")
 }
