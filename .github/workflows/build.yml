@@ -1,19 +1,57 @@
-- name: Debug - Show Me My Files
+name: Debug and Build
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Debug - Show Me My Files
         run: |
           echo "--- Current Directory ---"
           pwd
           echo "--- All Files in Repo ---"
           find . -maxdepth 4 -not -path '*/.*'
           
-      - name: Build Debug APK
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Try Build
         run: |
-          # This will try to find the folder again but tell us if it fails
+          # Look for the settings file
           SUBFOLDER=$(find . -name "settings.gradle.kts" -printf '%h\n' | head -n 1)
+          
           if [ -z "$SUBFOLDER" ]; then
-            echo "ERROR: Could not find settings.gradle.kts anywhere!"
+            echo "ERROR: Could not find settings.gradle.kts!"
+            echo "Searching for any .gradle file just in case..."
+            find . -name "*.gradle*"
             exit 1
           fi
+          
           echo "Found project in: $SUBFOLDER"
           cd "$SUBFOLDER"
-          chmod +x gradlew
-          ./gradlew assembleDebug
+          
+          # Check if gradlew exists
+          if [ -f "gradlew" ]; then
+            chmod +x gradlew
+            ./gradlew assembleDebug
+          else
+            echo "gradlew not found, trying system gradle"
+            gradle assembleDebug
+          fi
+
+      - name: Upload APK
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: DeskBuddy-App
+          path: "**/build/outputs/apk/debug/*.apk"
